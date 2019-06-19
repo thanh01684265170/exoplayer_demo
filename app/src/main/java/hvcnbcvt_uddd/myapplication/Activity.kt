@@ -6,8 +6,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.DefaultRenderersFactory
@@ -48,7 +49,10 @@ class Activity : AppCompatActivity() {
             mResumeWindow = savedInstanceState.getInt(STATE_RESUME_WINDOW)
             mResumePosition = savedInstanceState.getLong(STATE_RESUME_POSITION)
             mExoPlayerFullscreen = savedInstanceState.getBoolean(STATE_PLAYER_FULLSCREEN)
+            img_preview.visibility = View.GONE
         }
+
+        setVideoPreview()
     }
 
 
@@ -137,12 +141,11 @@ class Activity : AppCompatActivity() {
         }
 
         exo_player.player.prepare(mVideoSource)
-        exo_player.player.playWhenReady = true
+        exo_player.player.playWhenReady = false
     }
 
 
     override fun onResume() {
-
         super.onResume()
 
         if (mExoPlayerView == null) {
@@ -178,6 +181,17 @@ class Activity : AppCompatActivity() {
 //            exo_fullscreen_icon.setImageDrawable(resources.getDrawable(R.drawable.ic_fullscreen_skrink))
             mFullScreenDialog.show()
         }
+    }
+
+    private fun setVideoPreview() {
+        img_preview.setOnClickListener {
+            img_preview.visibility = View.GONE
+            exo_player.visibility = View.VISIBLE
+            exo_player.player.playWhenReady = true
+        }
+
+        Glide.with(this).load("https://i.vimeocdn.com/filter/overlay?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F7361" +
+                "94690_640x360.jpg&src1=http%3A%2F%2Ff.vimeocdn.com%2Fp%2Fimages%2Fcrawler_play.png").into(img_preview)
     }
 
 
