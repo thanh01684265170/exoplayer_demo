@@ -22,6 +22,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.util.Util
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.exo_playback_control_view.*
 
 class Activity : AppCompatActivity() {
@@ -76,9 +77,10 @@ class Activity : AppCompatActivity() {
     private fun openFullscreenDialog() {
 
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        (mExoPlayerView!!.parent as ViewGroup).removeView(mExoPlayerView)
+
+        (exo_player.parent as ViewGroup).removeView(exo_player)
         mFullScreenDialog.addContentView(
-            mExoPlayerView!!,
+            exo_player,
             ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         )
 //        exo_fullscreen_icon.setImageDrawable(resources.getDrawable(R.drawable.ic_fullscreen_skrink))
@@ -90,8 +92,10 @@ class Activity : AppCompatActivity() {
     private fun closeFullscreenDialog() {
 
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
         (mExoPlayerView!!.parent as ViewGroup).removeView(mExoPlayerView)
-        (findViewById(R.id.main_media_frame) as FrameLayout).addView(mExoPlayerView)
+        main_media_frame.addView(mExoPlayerView)
+
         mExoPlayerFullscreen = false
         mFullScreenDialog.dismiss()
         exo_fullscreen_icon.setImageDrawable(
@@ -124,16 +128,16 @@ class Activity : AppCompatActivity() {
         val trackSelector = DefaultTrackSelector(videoTrackSelectionFactory)
         val loadControl = DefaultLoadControl()
         val player = ExoPlayerFactory.newSimpleInstance(DefaultRenderersFactory(this), trackSelector, loadControl)
-        mExoPlayerView!!.player = player
+        exo_player.player = player
 
         val haveResumePosition = mResumeWindow != C.INDEX_UNSET
 
         if (haveResumePosition) {
-            mExoPlayerView!!.player.seekTo(mResumeWindow, mResumePosition)
+            exo_player.player.seekTo(mResumeWindow, mResumePosition)
         }
 
-        mExoPlayerView!!.player.prepare(mVideoSource)
-        mExoPlayerView!!.player.playWhenReady = true
+        exo_player.player.prepare(mVideoSource)
+        exo_player.player.playWhenReady = true
     }
 
 
@@ -144,6 +148,7 @@ class Activity : AppCompatActivity() {
         if (mExoPlayerView == null) {
 
             mExoPlayerView = findViewById(R.id.exo_player) as SimpleExoPlayerView
+
             initFullscreenDialog()
             initFullscreenButton()
 
@@ -165,9 +170,9 @@ class Activity : AppCompatActivity() {
         initExoPlayer()
 
         if (mExoPlayerFullscreen) {
-            (mExoPlayerView!!.parent as ViewGroup).removeView(mExoPlayerView)
+            (exo_player.parent as ViewGroup).removeView(exo_player)
             mFullScreenDialog.addContentView(
-                mExoPlayerView!!,
+                exo_player,
                 ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             )
 //            exo_fullscreen_icon.setImageDrawable(resources.getDrawable(R.drawable.ic_fullscreen_skrink))
@@ -180,11 +185,11 @@ class Activity : AppCompatActivity() {
 
         super.onPause()
 
-        if (mExoPlayerView != null && mExoPlayerView!!.player != null) {
-            mResumeWindow = mExoPlayerView!!.player.currentWindowIndex
-            mResumePosition = Math.max(0, mExoPlayerView!!.player.contentPosition)
+        if (exo_player != null && exo_player.player != null) {
+            mResumeWindow = exo_player.player.currentWindowIndex
+            mResumePosition = Math.max(0, exo_player.player.contentPosition)
 
-            mExoPlayerView!!.player.release()
+            exo_player.player.release()
         }
 
         if (mFullScreenDialog != null)
