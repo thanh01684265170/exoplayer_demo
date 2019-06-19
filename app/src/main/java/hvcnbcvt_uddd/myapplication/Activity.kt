@@ -32,7 +32,7 @@ class Activity : AppCompatActivity() {
     private var mExoPlayerView: SimpleExoPlayerView? = null
     private var mVideoSource: MediaSource? = null
     private var mExoPlayerFullscreen = false
-    private var mFullScreenDialog: Dialog? = null
+    private lateinit var mFullScreenDialog: Dialog
 
     private var mResumeWindow: Int = 0
     private var mResumePosition: Long = 0
@@ -77,13 +77,13 @@ class Activity : AppCompatActivity() {
 
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         (mExoPlayerView!!.parent as ViewGroup).removeView(mExoPlayerView)
-        mFullScreenDialog!!.addContentView(
+        mFullScreenDialog.addContentView(
             mExoPlayerView!!,
             ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         )
 //        exo_fullscreen_icon.setImageDrawable(resources.getDrawable(R.drawable.ic_fullscreen_skrink))
         mExoPlayerFullscreen = true
-        mFullScreenDialog!!.show()
+        mFullScreenDialog.show()
     }
 
 
@@ -93,7 +93,7 @@ class Activity : AppCompatActivity() {
         (mExoPlayerView!!.parent as ViewGroup).removeView(mExoPlayerView)
         (findViewById(R.id.main_media_frame) as FrameLayout).addView(mExoPlayerView)
         mExoPlayerFullscreen = false
-        mFullScreenDialog!!.dismiss()
+        mFullScreenDialog.dismiss()
         exo_fullscreen_icon.setImageDrawable(
             ContextCompat.getDrawable(
                 this@Activity,
@@ -143,7 +143,7 @@ class Activity : AppCompatActivity() {
 
         if (mExoPlayerView == null) {
 
-            mExoPlayerView = findViewById(R.id.exoplayer) as SimpleExoPlayerView
+            mExoPlayerView = findViewById(R.id.exo_player) as SimpleExoPlayerView
             initFullscreenDialog()
             initFullscreenButton()
 
@@ -166,12 +166,12 @@ class Activity : AppCompatActivity() {
 
         if (mExoPlayerFullscreen) {
             (mExoPlayerView!!.parent as ViewGroup).removeView(mExoPlayerView)
-            mFullScreenDialog!!.addContentView(
+            mFullScreenDialog.addContentView(
                 mExoPlayerView!!,
                 ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             )
 //            exo_fullscreen_icon.setImageDrawable(resources.getDrawable(R.drawable.ic_fullscreen_skrink))
-            mFullScreenDialog!!.show()
+            mFullScreenDialog.show()
         }
     }
 
@@ -188,7 +188,7 @@ class Activity : AppCompatActivity() {
         }
 
         if (mFullScreenDialog != null)
-            mFullScreenDialog!!.dismiss()
+            mFullScreenDialog.dismiss()
     }
 
 }
