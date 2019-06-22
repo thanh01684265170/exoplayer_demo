@@ -6,9 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import android.view.View
 import android.view.ViewGroup
-import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.DefaultRenderersFactory
@@ -27,10 +25,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.exo_playback_control_view.*
 
 class Activity : AppCompatActivity() {
-    private val STATE_RESUME_WINDOW = "resumeWindow"
-    private val STATE_RESUME_POSITION = "resumePosition"
-    private val STATE_PLAYER_FULLSCREEN = "playerFullscreen"
-
     private var mExoPlayerView: SimpleExoPlayerView? = null
     private var mVideoSource: MediaSource? = null
     private var mExoPlayerFullscreen = false
@@ -41,33 +35,11 @@ class Activity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        if (savedInstanceState != null) {
-            mResumeWindow = savedInstanceState.getInt(STATE_RESUME_WINDOW)
-            mResumePosition = savedInstanceState.getLong(STATE_RESUME_POSITION)
-            mExoPlayerFullscreen = savedInstanceState.getBoolean(STATE_PLAYER_FULLSCREEN)
-            img_preview.visibility = View.GONE
-        }
-
-        setVideoPreview()
     }
-
-
-    public override fun onSaveInstanceState(outState: Bundle) {
-
-        outState.putInt(STATE_RESUME_WINDOW, mResumeWindow)
-        outState.putLong(STATE_RESUME_POSITION, mResumePosition)
-        outState.putBoolean(STATE_PLAYER_FULLSCREEN, mExoPlayerFullscreen)
-
-        super.onSaveInstanceState(outState)
-    }
-
 
     private fun initFullscreenDialog() {
-
         mFullScreenDialog = object : Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen) {
             override fun onBackPressed() {
                 if (mExoPlayerFullscreen)
@@ -79,7 +51,6 @@ class Activity : AppCompatActivity() {
 
 
     private fun openFullscreenDialog() {
-
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
         (exo_player.parent as ViewGroup).removeView(exo_player)
@@ -87,19 +58,16 @@ class Activity : AppCompatActivity() {
             exo_player,
             ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         )
-//        exo_fullscreen_icon.setImageDrawable(resources.getDrawable(R.drawable.ic_fullscreen_skrink))
         mExoPlayerFullscreen = true
         mFullScreenDialog.show()
     }
 
 
     private fun closeFullscreenDialog() {
-
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
-        (mExoPlayerView!!.parent as ViewGroup).removeView(mExoPlayerView)
+        (mExoPlayerView?.parent as ViewGroup).removeView(mExoPlayerView)
         main_media_frame.addView(mExoPlayerView)
-
         mExoPlayerFullscreen = false
         mFullScreenDialog.dismiss()
         exo_fullscreen_icon.setImageDrawable(
@@ -112,10 +80,6 @@ class Activity : AppCompatActivity() {
 
 
     private fun initFullscreenButton() {
-
-//        val controlView = mExoPlayerView!!.findViewById(R.id.exo_controller)
-//        mFullScreenIcon = controlView.findViewById(R.id.exo_fullscreen_icon)
-//        mFullScreenButton = controlView.findViewById(R.id.exo_fullscreen_button)
         exo_fullscreen_button.setOnClickListener {
             if (!mExoPlayerFullscreen)
                 openFullscreenDialog()
@@ -126,20 +90,16 @@ class Activity : AppCompatActivity() {
 
 
     private fun initExoPlayer() {
-
         val bandwidthMeter = DefaultBandwidthMeter()
         val videoTrackSelectionFactory = AdaptiveTrackSelection.Factory(bandwidthMeter)
         val trackSelector = DefaultTrackSelector(videoTrackSelectionFactory)
         val loadControl = DefaultLoadControl()
         val player = ExoPlayerFactory.newSimpleInstance(DefaultRenderersFactory(this), trackSelector, loadControl)
         exo_player.player = player
-
         val haveResumePosition = mResumeWindow != C.INDEX_UNSET
-
         if (haveResumePosition) {
             exo_player.player.seekTo(mResumeWindow, mResumePosition)
         }
-
         exo_player.player.prepare(mVideoSource)
         exo_player.player.playWhenReady = false
     }
@@ -147,7 +107,6 @@ class Activity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-
         if (mExoPlayerView == null) {
 
             mExoPlayerView = findViewById(R.id.exo_player) as SimpleExoPlayerView
@@ -178,35 +137,18 @@ class Activity : AppCompatActivity() {
                 exo_player,
                 ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             )
-//            exo_fullscreen_icon.setImageDrawable(resources.getDrawable(R.drawable.ic_fullscreen_skrink))
             mFullScreenDialog.show()
         }
     }
 
-    private fun setVideoPreview() {
-        img_preview.setOnClickListener {
-            img_preview.visibility = View.GONE
-            exo_player.visibility = View.VISIBLE
-            exo_player.player.playWhenReady = true
-        }
-
-        Glide.with(this).load("https://i.vimeocdn.com/filter/overlay?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F7361" +
-                "94690_640x360.jpg&src1=http%3A%2F%2Ff.vimeocdn.com%2Fp%2Fimages%2Fcrawler_play.png").into(img_preview)
-    }
-
-
     override fun onPause() {
-
         super.onPause()
-
         if (exo_player != null && exo_player.player != null) {
             mResumeWindow = exo_player.player.currentWindowIndex
             mResumePosition = Math.max(0, exo_player.player.contentPosition)
 
             exo_player.player.release()
         }
-
-        if (mFullScreenDialog != null)
             mFullScreenDialog.dismiss()
     }
 
